@@ -49,3 +49,41 @@ server.get('/api/users', (req, res) => {
 
 
 // U - Update
+server.put("/api/users/:id", (req, res) => {
+    const { id } = req.params;
+  
+    const { name, bio } = req.body;
+    const newUser = { name, bio };
+  
+    if (!name || !bio) {
+      return res
+        .status(400)
+        .json({ errorMessage: "Please provide name and bio for the user." });
+    }
+  
+    db.findById(id)
+      .then(user => {
+        if (user) {
+          db.update(id, newUser)
+            .then(user => {
+              db.findById(id).then(user => {
+                res.status(200).json({ user });
+              });
+            })
+            .catch(err => {
+              res
+                .status(500)
+                .json({ error: "The user information could not be modified." });
+            });
+        } else {
+          res
+            .status(404)
+            .json({ message: "The user with the specified ID does not exist." });
+        }
+      })
+      .catch(err => {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist." });
+      });
+  });
