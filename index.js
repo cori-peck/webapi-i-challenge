@@ -87,3 +87,23 @@ server.put("/api/users/:id", (req, res) => {
           .json({ message: "The user with the specified ID does not exist." });
       });
   });
+
+
+  // D - Delete
+  server.delete('/api/users/:id', (req, res) => {
+      const id = req.params.id;
+
+      if(!id) {
+          return res
+          .status(404).json({ message: "The user with the specified id does not exist." })
+      }
+
+      db
+      .remove(id)
+      .then(deleted => {
+          res.status(204).end();
+      })
+      .catch(err => {
+          res.status(500).json({ error: "The user could not be removed" })
+      })
+  })
